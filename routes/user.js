@@ -4,10 +4,11 @@ const { authenticate } = require('../middlewares');
 
 const router = new Router();
 
-router.get('/', authenticate, (req, res, next) => {
+router.get('/', authenticate, async (req, res, next) => {
   try {
-    const user = User.findOne({ username: req.user.usernames });
-    res.json({ user });
+    const user = await User.findOne({ username: req.user.username });
+    const { _id, password, ...restOfUser } = user._doc;
+    res.json({ user: restOfUser });
   } catch (err) {
     next(err);
   }

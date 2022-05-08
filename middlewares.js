@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+
 const { JWT_ACCESS_TOKEN_SECRET } = process.env;
 
 function logErrors(err, req, res, next) {
@@ -15,6 +17,7 @@ function authenticate(req, res, next) {
   if (!accessToken) return res.status(401).json({ message: 'Unauthenticated' });
   jwt.verify(accessToken, JWT_ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) return res.status(401).json({ message: 'Unauthenticated' });
+    console.log(decoded);
     req.user = decoded;
     next();
   });
@@ -23,5 +26,5 @@ function authenticate(req, res, next) {
 module.exports = {
   logErrors,
   clientErrorHandler,
-  authenticate
+  authenticate,
 };

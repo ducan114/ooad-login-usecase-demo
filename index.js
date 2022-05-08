@@ -2,7 +2,7 @@ if (process.env.NODE_ENV != 'production') require('dotenv').config();
 
 const express = require('express');
 const { connect } = require('mongoose');
-const cors = requrie('cors');
+const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const { logErrors, clientErrorHandler } = require('./middlewares');
 const authRouter = require('./routes/auth');
@@ -19,6 +19,7 @@ app.use('/user', userRouter);
 app.use(logErrors);
 app.use(clientErrorHandler);
 
-connect(MONGODB_STRING_URI, () =>
-  app.listen(PORT, () => console.log(`Server is litening on port ${PORT}`))
-);
+connect(MONGODB_STRING_URI, () => {
+  console.log('Connected to database');
+  app.listen(PORT, () => console.log(`Server is litening on port ${PORT}`));
+});

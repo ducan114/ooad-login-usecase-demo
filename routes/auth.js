@@ -22,16 +22,18 @@ router.post('/signin', async (req, res, next) => {
         .json({ message: 'Login failed. Please check your credentials' });
     const refreshToken = jwt.sign(
       {
-        username
+        username,
       },
       JWT_REFRESH_TOKEN_SECRET
     );
-    res.cookie('refreshToken', refreshToken, {
-      maxAge: COOKIE_MAX_AGE,
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: true
-    });
+    res
+      .cookie('refreshToken', refreshToken, {
+        maxAge: COOKIE_MAX_AGE,
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: true,
+      })
+      .end();
   } catch (err) {
     next(err);
   }
@@ -41,10 +43,10 @@ router.get('/token', (req, res, next) => {
   const { refreshToken } = req.cookies;
   if (!refreshToken)
     return res.status(401).json({ message: 'Unauthenticated' });
-  jwt.decode(refreshToken, JWT_REFRESH_TOKEN_SECRET, async (err, decoded) => {
+  jwt.verify(refreshToken, JWT_REFRESH_TOKEN_SECRET, async (err, decoded) => {
     if (err) return res.status(401).json({ message: 'Unauthenticated' });
     try {
-      const user = User.findOne({ username: decoded.username });
+      const user = await User.findOne({ username: decoded.username });
       if (!user)
         return res.status(404).json({ message: 'User is no longer exists' });
       const accessToken = jwt.sign(
